@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Delivery monitoring project is ready.'
+            }
+        }
+
+        stage('Verify Python') {
+            steps {
+                sh 'python3 --version'
+            }
+        }
+
+        stage('Verify Project Files') {
+            steps {
+                sh 'test -f delivery_monitoring/delivery_metrics.py'
+                sh 'test -f delivery_monitoring/prometheus.yml'
+                sh 'test -f delivery_monitoring/alert_rules.yml'
+                echo 'All required project files are present.'
+            }
+        }
+
+        stage('Verify Python Dependencies') {
+            steps {
+                sh 'python3 -m pip show prometheus-client'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Delivery monitoring pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed. Check the console output.'
+        }
+    }
+}
